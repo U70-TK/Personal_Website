@@ -34,6 +34,19 @@ services:
         depends_on:
             - db
 
+    frontend:
+        container_name: personalweb-frontend
+        build:
+            context: personalweb-frontend
+            dockerfile: Dockerfile
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./personalweb-frontend:/personalweb-frontend
+            - node_modules_frontend:/personalweb-frontend/node_modules
+        networks:
+            - net
+
     nginx:
         container_name: personalweb-nginx
         build:
@@ -45,7 +58,9 @@ services:
             - net
         depends_on:
             - api
+            - frontend
 
 volumes:
     db_data:
     node_modules:
+    node_modules_frontend:
