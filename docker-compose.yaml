@@ -1,0 +1,51 @@
+version: "3.8"
+
+networks:
+    db-net:
+    net:
+
+services:
+    db:
+        build:
+            context: postgres
+            dockerfile: Dockerfile
+        container_name: personalweb-postgres
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+        ports:
+            - "5432:5432"
+        volumes:
+            - db_data:/var/lib/postgresql/data
+        networks:
+            - db-net
+
+    api:
+        container_name: personalweb
+        build:
+            context: personalweb
+            dockerfile: Dockerfile
+        volumes:
+            - ./personalweb:/personalweb
+            - node_modules:/personalweb/node_modules
+        networks:
+            - net
+            - db-net
+        depends_on:
+            - db
+
+    nginx:
+        container_name: personalweb-nginx
+        build:
+            context: nginx
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+        networks:
+            - net
+        depends_on:
+            - api
+
+volumes:
+    db_data:
+    node_modules:
